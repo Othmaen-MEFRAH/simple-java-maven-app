@@ -1,21 +1,17 @@
 pipeline {
   agent any
 
-  tools {
-    maven 'Maven3'
-  }
-
   environment {
     JAVA_HOME = "/usr/lib/jvm/java-21-openjdk-amd64"
-    PATH = "${JAVA_HOME}/bin:${PATH}"
+    MAVEN_HOME = "/opt/maven"
+    PATH = "${MAVEN_HOME}/bin:${JAVA_HOME}/bin:${PATH}"
   }
 
   stages {
-    stage('Check Tools') {
+    stage('Check') {
       steps {
-        sh 'echo JAVA_HOME=$JAVA_HOME'
-        sh 'which java && java -version'
-        sh 'which javac && javac -version'
+        sh 'java -version'
+        sh 'javac -version'
         sh 'mvn -version'
       }
     }
