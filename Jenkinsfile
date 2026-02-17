@@ -8,15 +8,20 @@ pipeline {
   }
 
   stages {
-    stage('Check') {
+    stage('Checkout Source Code') {
       steps {
         sh 'java -version'
         sh 'javac -version'
         sh 'mvn -version'
       }
     }
+    stage('Static Analysis') {
+            steps {
+                sh 'mvn checkstyle:check'
+            }
+        }
 
-    stage('Build') {
+    stage('Build - Compile Code') {
       steps {
         sh 'mvn -B -DskipTests clean package'
       }
