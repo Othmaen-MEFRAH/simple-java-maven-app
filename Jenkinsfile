@@ -2,7 +2,6 @@ pipeline {
   agent any
 
   tools {
-    jdk 'JDK21'
     maven 'Maven3'
   }
 
@@ -14,7 +13,9 @@ pipeline {
   stages {
     stage('Check Tools') {
       steps {
-        sh 'java -version'
+        sh 'echo JAVA_HOME=$JAVA_HOME'
+        sh 'which java && java -version'
+        sh 'which javac && javac -version'
         sh 'mvn -version'
       }
     }
@@ -26,4 +27,3 @@ pipeline {
     }
   }
 }
-
