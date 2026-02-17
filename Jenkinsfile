@@ -23,7 +23,7 @@ pipeline {
 
     stage('Build - Compile Code') {
       steps {
-        sh 'mvn -B -DskipTests clean package'
+          sh 'mvn -B clean compile'
       }
     }
     stage('Unit Tests') {
