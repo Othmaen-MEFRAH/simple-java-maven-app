@@ -38,10 +38,7 @@ pipeline {
         stage('Code Coverage') {
             steps {
                 sh 'mvn jacoco:report'
-
-                publishCoverage adapters: [
-                    jacocoAdapter('target/site/jacoco/jacoco.xml')
-                ]
+                recordCoverage tools: [[parser: 'JACOCO', pattern: 'target/site/jacoco/jacoco.xml']]
             }
         }
     }
