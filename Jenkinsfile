@@ -34,13 +34,28 @@ pipeline {
                 sh 'mvn test'
             }
         }
+        stage('SonarQube Analysis') {
+    steps {
+        withSonarQubeEnv('sonarqube') {
+            sh 'mvn sonar:sonar'
+        }
+    }
+}
 
+stage('Quality Gate') {
+    steps {
+        timeout(time: 2, unit: 'MINUTES') {
+            waitForQualityGate abortPipeline: true
+        }
+    }
+}
         stage('Code Coverage') {
             steps {
                 sh 'mvn jacoco:report'
                 recordCoverage tools: [[parser: 'JACOCO', pattern: 'target/site/jacoco/jacoco.xml']]
             }
         }
+        
     }
 
     post {
