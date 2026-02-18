@@ -3,13 +3,15 @@ package com.mycompany.app;
 /**
  * Main application class.
  */
-public final class App {
+public class App {
 
     /**
-     * Prevent instantiation.
+     * Returns the greeting message.
+     *
+     * @return message string
      */
-    private App() {
-        // Utility class
+    public String getMessage() {
+        return "Hello World!";
     }
 
     /**
@@ -18,7 +20,6 @@ public final class App {
      * @param args command-line arguments
      */
     public static void main(final String[] args) {
-        System.out.println("Hello World!");
+        System.out.println(new App().getMessage());
     }
-
 }
