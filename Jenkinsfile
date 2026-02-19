@@ -59,6 +59,22 @@ stage('Quality Gate') {
     }
 
     post {
+        success {
+    emailext(
+      to: "mefrahothmane@gmail.com",
+      subject: "✅ Jenkins Build SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+      body: "Build succeeded!\nCheck: ${env.BUILD_URL}"
+    )
+  }
+
+  failure {
+    emailext(
+      to: "mefrahothmane@gmail.com",
+      subject: "❌ Jenkins Build FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+      body: "Build failed!\nCheck console: ${env.BUILD_URL}"
+    )
+  }
+
         always {
             junit 'target/surefire-reports/*.xml'
             archiveArtifacts artifacts: 'target/site/jacoco/**', fingerprint: true
