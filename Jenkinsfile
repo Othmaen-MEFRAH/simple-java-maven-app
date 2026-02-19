@@ -58,12 +58,22 @@ stage('Quality Gate') {
         
     }
 
-    post {
-   
+   post {
+
+  always {
+    // Always publish test reports, even if the build fails
+    junit testResults: 'target/surefire-reports/*.xml', allowEmptyResults: true
+
+    // Always archive JaCoCo coverage report (if generated)
+    archiveArtifacts artifacts: 'target/site/jacoco/**',
+                     fingerprint: true,
+                     allowEmptyArchive: true
+  }
+
   success {
     emailext(
       to: "mefrahothmane@gmail.com",
-      subject: "✅ Build Successful | ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+      subject: "✅ SUCCESS – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
       body: """
 Hello,
 
@@ -74,10 +84,11 @@ Build Details:
 Job Name     : ${env.JOB_NAME}
 Build Number : #${env.BUILD_NUMBER}
 Status       : SUCCESS
-Timestamp    : ${new Date()}
+Branch       : ${env.BRANCH_NAME ?: 'N/A'}
+Duration     : ${currentBuild.durationString}
 ----------------------------------------
 
-You can access the build report using the link below:
+You can access the build report here:
 ${env.BUILD_URL}
 
 Regards,
@@ -89,7 +100,7 @@ Jenkins Automation Server
   failure {
     emailext(
       to: "mefrahothmane@gmail.com",
-      subject: "❌ Build Failed | ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+      subject: "❌ FAILED – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
       body: """
 Hello,
 
@@ -100,10 +111,39 @@ Build Details:
 Job Name     : ${env.JOB_NAME}
 Build Number : #${env.BUILD_NUMBER}
 Status       : FAILED
-Timestamp    : ${new Date()}
+Branch       : ${env.BRANCH_NAME ?: 'N/A'}
+Duration     : ${currentBuild.durationString}
 ----------------------------------------
 
-Please review the console output for more information:
+Please review the console output for more details:
+${env.BUILD_URL}console
+
+Regards,
+Jenkins Automation Server
+"""
+    )
+  }
+
+  unstable {
+    emailext(
+      to: "mefrahothmane@gmail.com",
+      subject: "⚠️ UNSTABLE – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+      body: """
+Hello,
+
+The pipeline finished with an UNSTABLE status.
+This usually indicates test failures or insufficient coverage.
+
+Build Details:
+----------------------------------------
+Job Name     : ${env.JOB_NAME}
+Build Number : #${env.BUILD_NUMBER}
+Status       : UNSTABLE
+Branch       : ${env.BRANCH_NAME ?: 'N/A'}
+Duration     : ${currentBuild.durationString}
+----------------------------------------
+
+More details are available here:
 ${env.BUILD_URL}
 
 Regards,
@@ -112,9 +152,37 @@ Jenkins Automation Server
     )
   }
 
-        always {
-            junit 'target/surefire-reports/*.xml'
-            archiveArtifacts artifacts: 'target/site/jacoco/**', fingerprint: true
-        }
-    }
+  aborted {
+    emailext(
+      to: "mefrahothmane@gmail.com",
+      subject: "⏹️ ABORTED – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+      body: """
+Hello,
+
+The pipeline execution was aborted before completion.
+
+Build Details:
+----------------------------------------
+Job Name     : ${env.JOB_NAME}
+Build Number : #${env.BUILD_NUMBER}
+Status       : ABORTED
+Branch       : ${env.BRANCH_NAME ?: 'N/A'}
+Duration     : ${currentBuild.durationString}
+----------------------------------------
+
+You can check the build details here:
+${env.BUILD_URL}
+
+Regards,
+Jenkins Automation Server
+"""
+    )
+  }
+
+  cleanup {
+    // Optional: clean workspace after build
+    // cleanWs()
+  }
+}
+
 }
