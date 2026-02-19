@@ -59,15 +59,23 @@ stage('Quality Gate') {
     }
 
    post {
-
   always {
-    // Always publish test reports, even if the build fails
-    junit testResults: 'target/surefire-reports/*.xml', allowEmptyResults: true
+    script {
+      def junitFiles = findFiles(glob: 'target/surefire-reports/*.xml')
+      if (junitFiles?.length) {
+        junit testResults: 'target/surefire-reports/*.xml', allowEmptyResults: true
+      } else {
+        echo "WARNING: No JUnit reports generated!"
+      }
 
-    // Always archive JaCoCo coverage report (if generated)
-    archiveArtifacts artifacts: 'target/site/jacoco/**',
-                     fingerprint: true,
-                     allowEmptyArchive: true
+      if (fileExists('target/site/jacoco/index.html')) {
+        archiveArtifacts artifacts: 'target/site/jacoco/**',
+                         fingerprint: true,
+                         allowEmptyArchive: true
+      } else {
+        echo "WARNING: No JaCoCo coverage report generated!"
+      }
+    }
   }
 
   success {
@@ -178,11 +186,7 @@ Jenkins Automation Server
 """
     )
   }
-
-  cleanup {
-    // Optional: clean workspace after build
-    // cleanWs()
-  }
 }
+
 
 }
