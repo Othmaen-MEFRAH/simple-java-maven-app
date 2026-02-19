@@ -59,19 +59,56 @@ stage('Quality Gate') {
     }
 
     post {
-        success {
+   
+  success {
     emailext(
       to: "mefrahothmane@gmail.com",
-      subject: "✅ Jenkins Build SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-      body: "Build succeeded!\nCheck: ${env.BUILD_URL}"
+      subject: "✅ Build Successful | ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+      body: """
+Hello,
+
+The Jenkins pipeline execution completed successfully.
+
+Build Details:
+----------------------------------------
+Job Name     : ${env.JOB_NAME}
+Build Number : #${env.BUILD_NUMBER}
+Status       : SUCCESS
+Timestamp    : ${new Date()}
+----------------------------------------
+
+You can access the build report using the link below:
+${env.BUILD_URL}
+
+Regards,
+Jenkins Automation Server
+"""
     )
   }
 
   failure {
     emailext(
       to: "mefrahothmane@gmail.com",
-      subject: "❌ Jenkins Build FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-      body: "Build failed!\nCheck console: ${env.BUILD_URL}"
+      subject: "❌ Build Failed | ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+      body: """
+Hello,
+
+The Jenkins pipeline execution has failed.
+
+Build Details:
+----------------------------------------
+Job Name     : ${env.JOB_NAME}
+Build Number : #${env.BUILD_NUMBER}
+Status       : FAILED
+Timestamp    : ${new Date()}
+----------------------------------------
+
+Please review the console output for more information:
+${env.BUILD_URL}
+
+Regards,
+Jenkins Automation Server
+"""
     )
   }
 
