@@ -102,7 +102,7 @@ stage('Quality Gate') {
 
   success {
   emailext(
-    to: "${params.EMAIL_TO}"
+    to: "${params.EMAIL_TO}",
     subject: "✅ SUCCESS – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
     body: """
 Hello,
@@ -130,7 +130,7 @@ Jenkins Automation Server
 
   failure {
   emailext(
-    to: "${params.EMAIL_TO}"
+    to: "${params.EMAIL_TO}",
     subject: "❌ FAILED – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
     body: """
 Hello,
@@ -158,7 +158,7 @@ Jenkins Automation Server
 
   unstable {
   emailext(
-    to: "${params.EMAIL_TO}"
+    to: "${params.EMAIL_TO}",
     subject: "⚠️ UNSTABLE – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
     body: """
 Hello,
@@ -187,7 +187,7 @@ Jenkins Automation Server
 
   aborted {
   emailext(
-    to: "${params.EMAIL_TO}"
+    to: "${params.EMAIL_TO}",
     subject: "⏹️ ABORTED – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
     body: """
 Hello,
