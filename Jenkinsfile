@@ -11,6 +11,14 @@ pipeline {
 
         stage('Checkout Source Code') {
             steps {
+                checkout scm
+
+    script {
+      env.GIT_COMMIT_MSG = sh(
+        script: "git log -1 --pretty=%s",
+        returnStdout: true
+      ).trim()
+    }
                 sh 'java --version'
                 sh 'javac --version'
                 sh 'mvn --version'
@@ -79,10 +87,10 @@ stage('Quality Gate') {
   }
 
   success {
-    emailext(
-      to: "mefrahothmane@gmail.com",
-      subject: "✅ SUCCESS – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-      body: """
+  emailext(
+    to: "mefrahothmane@gmail.com",
+    subject: "✅ SUCCESS – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+    body: """
 Hello,
 
 The Jenkins pipeline execution completed successfully.
@@ -92,8 +100,10 @@ Build Details:
 Job Name     : ${env.JOB_NAME}
 Build Number : #${env.BUILD_NUMBER}
 Status       : SUCCESS
-Branch       : ${env.BRANCH_NAME ?: 'N/A'}
 Duration     : ${currentBuild.durationString}
+Trigger      : ${currentBuild.rawBuild.getCauses()[0].shortDescription}
+Commit       : ${env.GIT_COMMIT ? env.GIT_COMMIT.take(7) : 'N/A'}
+Commit Msg   : ${env.GIT_COMMIT_MSG ?: 'N/A'}
 ----------------------------------------
 
 You can access the build report here:
@@ -102,14 +112,14 @@ ${env.BUILD_URL}
 Regards,
 Jenkins Automation Server
 """
-    )
-  }
+  )
+}
 
   failure {
-    emailext(
-      to: "mefrahothmane@gmail.com",
-      subject: "❌ FAILED – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-      body: """
+  emailext(
+    to: "mefrahothmane@gmail.com",
+    subject: "❌ FAILED – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+    body: """
 Hello,
 
 The Jenkins pipeline execution has failed.
@@ -119,8 +129,10 @@ Build Details:
 Job Name     : ${env.JOB_NAME}
 Build Number : #${env.BUILD_NUMBER}
 Status       : FAILED
-Branch       : ${env.BRANCH_NAME ?: 'N/A'}
 Duration     : ${currentBuild.durationString}
+Trigger      : ${currentBuild.rawBuild.getCauses()[0].shortDescription}
+Commit       : ${env.GIT_COMMIT ? env.GIT_COMMIT.take(7) : 'N/A'}
+Commit Msg   : ${env.GIT_COMMIT_MSG ?: 'N/A'}
 ----------------------------------------
 
 Please review the console output for more details:
@@ -129,14 +141,14 @@ ${env.BUILD_URL}console
 Regards,
 Jenkins Automation Server
 """
-    )
-  }
+  )
+}
 
   unstable {
-    emailext(
-      to: "mefrahothmane@gmail.com",
-      subject: "⚠️ UNSTABLE – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-      body: """
+  emailext(
+    to: "mefrahothmane@gmail.com",
+    subject: "⚠️ UNSTABLE – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+    body: """
 Hello,
 
 The pipeline finished with an UNSTABLE status.
@@ -147,8 +159,10 @@ Build Details:
 Job Name     : ${env.JOB_NAME}
 Build Number : #${env.BUILD_NUMBER}
 Status       : UNSTABLE
-Branch       : ${env.BRANCH_NAME ?: 'N/A'}
 Duration     : ${currentBuild.durationString}
+Trigger      : ${currentBuild.rawBuild.getCauses()[0].shortDescription}
+Commit       : ${env.GIT_COMMIT ? env.GIT_COMMIT.take(7) : 'N/A'}
+Commit Msg   : ${env.GIT_COMMIT_MSG ?: 'N/A'}
 ----------------------------------------
 
 More details are available here:
@@ -157,14 +171,14 @@ ${env.BUILD_URL}
 Regards,
 Jenkins Automation Server
 """
-    )
-  }
+  )
+}
 
   aborted {
-    emailext(
-      to: "mefrahothmane@gmail.com",
-      subject: "⏹️ ABORTED – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-      body: """
+  emailext(
+    to: "mefrahothmane@gmail.com",
+    subject: "⏹️ ABORTED – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+    body: """
 Hello,
 
 The pipeline execution was aborted before completion.
@@ -174,8 +188,10 @@ Build Details:
 Job Name     : ${env.JOB_NAME}
 Build Number : #${env.BUILD_NUMBER}
 Status       : ABORTED
-Branch       : ${env.BRANCH_NAME ?: 'N/A'}
 Duration     : ${currentBuild.durationString}
+Trigger      : ${currentBuild.rawBuild.getCauses()[0].shortDescription}
+Commit       : ${env.GIT_COMMIT ? env.GIT_COMMIT.take(7) : 'N/A'}
+Commit Msg   : ${env.GIT_COMMIT_MSG ?: 'N/A'}
 ----------------------------------------
 
 You can check the build details here:
@@ -184,9 +200,7 @@ ${env.BUILD_URL}
 Regards,
 Jenkins Automation Server
 """
-    )
-  }
+  )
 }
-
-
+}
 }
