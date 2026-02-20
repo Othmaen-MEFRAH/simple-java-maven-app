@@ -1,6 +1,14 @@
 pipeline {
     agent any
 
+    parameters {
+        string(
+            name: 'EMAIL_TO',
+            defaultValue: 'mefrahothmane@gmail.com',
+            description: 'Emails separated by comma'
+        )
+    }
+
     environment {
         JAVA_HOME  = "/usr/lib/jvm/java-21-openjdk-amd64"
         MAVEN_HOME = "/opt/maven"
@@ -88,7 +96,7 @@ stage('Quality Gate') {
 
   success {
   emailext(
-    to: "mefrahothmane@gmail.com",
+    to: "${params.EMAIL_TO}"
     subject: "✅ SUCCESS – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
     body: """
 Hello,
@@ -116,7 +124,7 @@ Jenkins Automation Server
 
   failure {
   emailext(
-    to: "mefrahothmane@gmail.com",
+    to: "${params.EMAIL_TO}"
     subject: "❌ FAILED – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
     body: """
 Hello,
@@ -144,7 +152,7 @@ Jenkins Automation Server
 
   unstable {
   emailext(
-    to: "mefrahothmane@gmail.com",
+    to: "${params.EMAIL_TO}"
     subject: "⚠️ UNSTABLE – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
     body: """
 Hello,
@@ -173,7 +181,7 @@ Jenkins Automation Server
 
   aborted {
   emailext(
-    to: "mefrahothmane@gmail.com",
+    to: "${params.EMAIL_TO}"
     subject: "⏹️ ABORTED – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
     body: """
 Hello,
