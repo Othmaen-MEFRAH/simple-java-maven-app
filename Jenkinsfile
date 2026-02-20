@@ -101,7 +101,6 @@ Job Name     : ${env.JOB_NAME}
 Build Number : #${env.BUILD_NUMBER}
 Status       : SUCCESS
 Duration     : ${currentBuild.durationString}
-Trigger      : ${currentBuild.rawBuild.getCauses()[0].shortDescription}
 Commit       : ${env.GIT_COMMIT ? env.GIT_COMMIT.take(7) : 'N/A'}
 Commit Msg   : ${env.GIT_COMMIT_MSG ?: 'N/A'}
 ----------------------------------------
@@ -130,7 +129,6 @@ Job Name     : ${env.JOB_NAME}
 Build Number : #${env.BUILD_NUMBER}
 Status       : FAILED
 Duration     : ${currentBuild.durationString}
-Trigger      : ${currentBuild.rawBuild.getCauses()[0].shortDescription}
 Commit       : ${env.GIT_COMMIT ? env.GIT_COMMIT.take(7) : 'N/A'}
 Commit Msg   : ${env.GIT_COMMIT_MSG ?: 'N/A'}
 ----------------------------------------
@@ -160,7 +158,6 @@ Job Name     : ${env.JOB_NAME}
 Build Number : #${env.BUILD_NUMBER}
 Status       : UNSTABLE
 Duration     : ${currentBuild.durationString}
-Trigger      : ${currentBuild.rawBuild.getCauses()[0].shortDescription}
 Commit       : ${env.GIT_COMMIT ? env.GIT_COMMIT.take(7) : 'N/A'}
 Commit Msg   : ${env.GIT_COMMIT_MSG ?: 'N/A'}
 ----------------------------------------
@@ -189,7 +186,6 @@ Job Name     : ${env.JOB_NAME}
 Build Number : #${env.BUILD_NUMBER}
 Status       : ABORTED
 Duration     : ${currentBuild.durationString}
-Trigger      : ${currentBuild.rawBuild.getCauses()[0].shortDescription}
 Commit       : ${env.GIT_COMMIT ? env.GIT_COMMIT.take(7) : 'N/A'}
 Commit Msg   : ${env.GIT_COMMIT_MSG ?: 'N/A'}
 ----------------------------------------
