@@ -1,3 +1,9 @@
+properties([
+  parameters([
+    string(name: 'EMAIL_TO', defaultValue: 'mefrahnothmane@gmail.com', description: 'Emails separated by comma')
+  ])
+])
+
 pipeline {
     agent any
 
