@@ -1,6 +1,6 @@
 properties([
   parameters([
-    string(name: 'EMAIL_TO', defaultValue: 'mefrahnothmane@gmail.com', description: 'Emails separated by comma')
+    string(name: 'EMAIL_TO', defaultValue: 'mefrahnothmane@gmail.com, ilyassmefrah@gmail.com', description: 'Emails separated by comma')
   ])
 ])
 
