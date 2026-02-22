@@ -1,19 +1,11 @@
 properties([
   parameters([
-    string(name: 'EMAIL_TO', defaultValue: 'mefrahnothmane@gmail.com, ilyassmefrah@gmail.com', description: 'Emails separated by comma')
+    string(name: 'EMAIL_TO', defaultValue: 'mefrahnothmane@gmail.com', description: 'Emails separated by comma')
   ])
 ])
 
 pipeline {
     agent any
-
-    parameters {
-        string(
-            name: 'EMAIL_TO',
-            defaultValue: 'mefrahothmane@gmail.com',
-            description: 'Emails separated by comma'
-        )
-    }
 
     environment {
         JAVA_HOME  = "/usr/lib/jvm/java-21-openjdk-amd64"
