@@ -5,72 +5,87 @@ properties([
 ])
 
 pipeline {
-    agent any
+  agent any
 
-    environment {
-        JAVA_HOME  = "/usr/lib/jvm/java-21-openjdk-amd64"
-        MAVEN_HOME = "/opt/maven"
-        PATH       = "${MAVEN_HOME}/bin:${JAVA_HOME}/bin:${PATH}"
+  environment {
+    JAVA_HOME  = "/usr/lib/jvm/java-21-openjdk-amd64"
+    MAVEN_HOME = "/opt/maven"
+    PATH       = "${MAVEN_HOME}/bin:${JAVA_HOME}/bin:${PATH}"
+
+    IMAGE_NAME = "myapp"
+    IMAGE_TAG  = "${env.BUILD_NUMBER}"
+    FULL_IMAGE = "${IMAGE_NAME}:${IMAGE_TAG}"
+  }
+
+  stages {
+
+    stage('Checkout Source Code') {
+      steps {
+        checkout scm
+        script {
+          env.GIT_COMMIT_MSG = sh(script: "git log -1 --pretty=%s", returnStdout: true).trim()
+        }
+        sh 'java --version'
+        sh 'javac --version'
+        sh 'mvn --version'
+      }
     }
 
-    stages {
-
-        stage('Checkout Source Code') {
-            steps {
-                checkout scm
-
-    script {
-      env.GIT_COMMIT_MSG = sh(
-        script: "git log -1 --pretty=%s",
-        returnStdout: true
-      ).trim()
+    stage('Static Analysis') {
+      steps {
+        sh 'mvn -B checkstyle:check'
+      }
     }
-                sh 'java --version'
-                sh 'javac --version'
-                sh 'mvn --version'
-            }
-        }
 
-        stage('Static Analysis') {
-            steps {
-                sh 'mvn checkstyle:check'
-            }
-        }
+    stage('Build - Compile Code') {
+      steps {
+        sh 'mvn -B clean compile'
+      }
+    }
 
-        stage('Build - Compile Code') {
-            steps {
-                sh 'mvn -B clean compile'
-            }
-        }
+    stage('Container Image') {
+      steps {
+        sh "docker build -t ${FULL_IMAGE} ."
+      }
+    }
 
-        stage('Unit Tests') {
-            steps {
-                sh 'mvn test'
-            }
-        }
-        stage('SonarQube Analysis') {
-    steps {
+    stage('Unit Tests') {
+      steps {
+        sh """
+          docker run --rm \
+            -v "\$WORKSPACE":/app -w /app \
+            ${FULL_IMAGE} sh -lc 'mvn -B test'
+        """
+      }
+    }
+
+    stage('SonarQube Analysis') {
+      steps {
         withSonarQubeEnv('sonarqube') {
-            sh 'mvn sonar:sonar'
+          sh 'mvn -B sonar:sonar'
         }
+      }
     }
-}
 
-stage('Quality Gate') {
-    steps {
+    stage('Quality Gate') {
+      steps {
         timeout(time: 2, unit: 'MINUTES') {
-            waitForQualityGate abortPipeline: true
+          waitForQualityGate abortPipeline: true
         }
+      }
     }
-}
-        stage('Code Coverage') {
-            steps {
-                sh 'mvn jacoco:report'
-                recordCoverage tools: [[parser: 'JACOCO', pattern: 'target/site/jacoco/jacoco.xml']]
-            }
-        }
-        
+
+    stage('Code Coverage') {
+      steps {
+        sh """
+          docker run --rm \
+            -v "\$WORKSPACE":/app -w /app \
+            ${FULL_IMAGE} sh -lc 'mvn -B jacoco:report'
+        """
+        recordCoverage tools: [[parser: 'JACOCO', pattern: 'target/site/jacoco/jacoco.xml']]
+      }
     }
+  }
 
    post {
   always {
