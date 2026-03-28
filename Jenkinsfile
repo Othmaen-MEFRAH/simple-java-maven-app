@@ -60,6 +60,12 @@ pipeline {
       }
     }
 
+     stage('Integration Tests') {
+      steps {
+        sh 'mvn verify'
+      }
+    }
+
     stage('SonarQube Analysis') {
       steps {
         withSonarQubeEnv('sonarqube') {
@@ -86,14 +92,7 @@ pipeline {
         recordCoverage tools: [[parser: 'JACOCO', pattern: 'target/site/jacoco/jacoco.xml']]
       }
     }
-    \\test test test 
-
-    stage('Integration Tests') {
-      steps {
-        sh 'mvn verify'
-      }
-    }
-    
+  
     
   }
 
