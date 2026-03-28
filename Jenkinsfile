@@ -39,6 +39,7 @@ pipeline {
 
     stage('Build - Compile Code') {
       steps {
+        sh 'rm -rf target || true'
         sh 'mvn -B clean compile'
       }
     }
