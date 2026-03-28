@@ -39,6 +39,7 @@ pipeline {
 
     stage('Build - Compile Code') {
       steps {
+        sh 'sudo rm -rf target || true'
         sh 'mvn -B clean compile'
       }
     }
@@ -60,7 +61,7 @@ pipeline {
       }
     }
 
-     stage('Integration Tests') {
+    stage('Integration Tests') {
       steps {
         sh 'mvn verify'
       }
