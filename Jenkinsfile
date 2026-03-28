@@ -85,6 +85,7 @@ pipeline {
         recordCoverage tools: [[parser: 'JACOCO', pattern: 'target/site/jacoco/jacoco.xml']]
       }
     }
+    \\test test
 
     stage('Integration Tests') {
       steps {
