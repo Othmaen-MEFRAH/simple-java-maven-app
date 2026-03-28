@@ -85,6 +85,14 @@ pipeline {
         recordCoverage tools: [[parser: 'JACOCO', pattern: 'target/site/jacoco/jacoco.xml']]
       }
     }
+
+    stage('Integration Tests') {
+      steps {
+        sh 'mvn verify'
+      }
+    }
+    
+    
   }
 
    post {
