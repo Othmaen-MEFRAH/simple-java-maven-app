@@ -85,9 +85,10 @@ pipeline {
     stage('Code Coverage') {
       steps {
         sh """
-          docker run --rm \
-            -v "\$WORKSPACE":/app -w /app \
-            ${FULL_IMAGE} sh -lc 'mvn -B jacoco:report'
+        docker run --rm \
+          -u \$(id -u):\$(id -g) \
+          -v "\$WORKSPACE":/app -w /app \
+          ${FULL_IMAGE} sh -lc 'mvn -B jacoco:report'
         """
         recordCoverage tools: [[parser: 'JACOCO', pattern: 'target/site/jacoco/jacoco.xml']]
       }
