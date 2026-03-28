@@ -39,7 +39,7 @@ pipeline {
 
     stage('Build - Compile Code') {
       steps {
-        sh 'sudo rm -rf target || true'
+        sh 'rm -rf target || true'
         sh 'mvn -B clean compile'
       }
     }
@@ -63,7 +63,12 @@ pipeline {
 
     stage('Integration Tests') {
       steps {
-        sh 'mvn verify'
+        sh """
+        docker run --rm \
+          -u \$(id -u):\$(id -g) \
+          -v "\$WORKSPACE":/app -w /app \
+          ${FULL_IMAGE} sh -lc 'mvn verify'
+        """
       }
     }
 
