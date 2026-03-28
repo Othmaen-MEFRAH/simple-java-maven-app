@@ -39,8 +39,13 @@ pipeline {
 
     stage('Build - Compile Code') {
       steps {
-        sh 'rm -rf target || true'
-        sh 'mvn -B clean compile'
+        sh """
+        docker run --rm \
+          -u \$(id -u jenkins):\$(id -g jenkins) \
+          -v "\$WORKSPACE":/app -w /app \
+          maven:3.9.6-eclipse-temurin-17 \
+          mvn -B clean compile
+        """
       }
     }
 
@@ -74,11 +79,15 @@ pipeline {
     }
 
     stage('SonarQube Analysis') {
-      steps {
+     steps {
         withSonarQubeEnv('sonarqube') {
-          sh 'mvn -B sonar:sonar'
+          sh """
+          docker run --rm \
+            -u \$(id -u jenkins):\$(id -g jenkins) \
+            -v "\$WORKSPACE":/app -w /app \
+            ${FULL_IMAGE} sh -lc 'mvn -B sonar:sonar'
+          """
         }
-      }
     }
 
     stage('Quality Gate') {
