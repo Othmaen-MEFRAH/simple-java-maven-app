@@ -68,14 +68,14 @@ pipeline {
 
     stage('Integration Tests') {
       steps {
-        echo "START Integration Tests"
+        echo "Running Integration Tests..."
         sh """
         docker run --rm \
           -u \$(id -u):\$(id -g) \
           -v "\$WORKSPACE":/app -w /app \
           ${FULL_IMAGE} sh -lc 'mvn verify'
         """
-      }
+      }  
     }
 
     stage('SonarQube Analysis') {
