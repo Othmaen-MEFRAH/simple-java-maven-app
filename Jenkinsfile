@@ -63,6 +63,7 @@ pipeline {
 
     stage('Integration Tests') {
       steps {
+        echo "START Integration Tests"
         sh """
         docker run --rm \
           -u \$(id -u):\$(id -g) \
