@@ -18,11 +18,6 @@ pipeline {
   }
 
   stages {
-     stage('Clean Workspace') {
-            steps {
-                cleanWs()  
-            }
-      }
 
     stage('Checkout Source Code') {
       steps {
@@ -57,9 +52,10 @@ pipeline {
     stage('Unit Tests') {
       steps {
         sh """
-          docker run --rm \
-            -v "\$WORKSPACE":/app -w /app \
-            ${FULL_IMAGE} sh -lc 'mvn -B test'
+        docker run --rm \
+          -u \$(id -u):\$(id -g) \
+          -v "\$WORKSPACE":/app -w /app \
+          ${FULL_IMAGE} sh -lc 'mvn -B test'
         """
       }
     }
