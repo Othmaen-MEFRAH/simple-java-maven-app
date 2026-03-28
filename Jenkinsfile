@@ -33,9 +33,18 @@ pipeline {
 
     stage('Static Analysis') {
       steps {
-        sh 'mvn -B checkstyle:check'
+        sh """
+        docker run --rm \
+          -u \$(id -u jenkins):\$(id -g jenkins) \
+          -v "\$WORKSPACE":/app -w /app \
+         maven:3.9.6-eclipse-temurin-17 \
+         mvn -B checkstyle:check
+       """
       }
     }
+
+    
+
 
     stage('Build - Compile Code') {
       steps {
@@ -59,7 +68,7 @@ pipeline {
       steps {
         sh """
         docker run --rm \
-          -u \$(id -u):\$(id -g) \
+          -u $(id -u jenkins):$(id -g jenkins)
           -v "\$WORKSPACE":/app -w /app \
           ${FULL_IMAGE} sh -lc 'mvn -B test'
         """
@@ -71,7 +80,7 @@ pipeline {
         echo "Running Integration Tests..."
         sh """
         docker run --rm \
-          -u \$(id -u):\$(id -g) \
+          -u $(id -u jenkins):$(id -g jenkins)
           -v "\$WORKSPACE":/app -w /app \
           ${FULL_IMAGE} sh -lc 'mvn verify'
         """
@@ -102,7 +111,7 @@ pipeline {
       steps {
         sh """
         docker run --rm \
-          -u \$(id -u):\$(id -g) \
+          -u $(id -u jenkins):$(id -g jenkins)
           -v "\$WORKSPACE":/app -w /app \
           ${FULL_IMAGE} sh -lc 'mvn -B jacoco:report'
         """
