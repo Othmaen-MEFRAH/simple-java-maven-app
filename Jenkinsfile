@@ -68,7 +68,7 @@ pipeline {
       steps {
         sh """
         docker run --rm \
-          -u $(id -u jenkins):$(id -g jenkins)
+          -u $(id -u jenkins):$(id -g jenkins) \
           -v "\$WORKSPACE":/app -w /app \
           ${FULL_IMAGE} sh -lc 'mvn -B test'
         """
@@ -80,7 +80,7 @@ pipeline {
         echo "Running Integration Tests..."
         sh """
         docker run --rm \
-          -u $(id -u jenkins):$(id -g jenkins)
+          -u $(id -u jenkins):$(id -g jenkins) \
           -v "\$WORKSPACE":/app -w /app \
           ${FULL_IMAGE} sh -lc 'mvn verify'
         """
@@ -111,7 +111,7 @@ pipeline {
       steps {
         sh """
         docker run --rm \
-          -u $(id -u jenkins):$(id -g jenkins)
+          -u $(id -u jenkins):$(id -g jenkins) \
           -v "\$WORKSPACE":/app -w /app \
           ${FULL_IMAGE} sh -lc 'mvn -B jacoco:report'
         """
